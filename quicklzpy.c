@@ -15,7 +15,7 @@
 
   **/
 #include <Python.h>
-
+#define PY_MAJOR_VERSION  3
 #if PY_MAJOR_VERSION >= 3
 #define IS_PY3K
 #endif
