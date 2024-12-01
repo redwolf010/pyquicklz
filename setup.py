@@ -2,7 +2,7 @@ from distutils.core import setup, Extension
 
 setup(
     name = "quicklz",
-    version = "1.5.0",
+    version = "1.5.0.4",
     description="QuickLZ Bindings for Python",
     author='Sergey Dryabzhinsky',
     author_email='sergey.dryabzhinsky@gmail.com',
