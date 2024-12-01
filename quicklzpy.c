@@ -188,10 +188,10 @@ static PyTypeObject QLZStateCompressType = {
   sizeof(qlz_state_compress_Type),/* int tp_basicsize; */
   0,                          /* int tp_itemsize;       /* not used much */
   (destructor)qlz_state_compress_dealloc, /* destructor tp_dealloc; */
-  qlz_c_print,                /* printfunc  tp_print;   */
+  0,                /* printfunc  tp_print;   */
   qlz_py_getattr,             /* getattrfunc  tp_getattr; /* __getattr__ */
   qlz_py_setattr,             /* setattrfunc  tp_setattr;  /* __setattr__ */
-  qlz_compare,                          /* cmpfunc  tp_compare;  /* __cmp__ */
+  0,                          /* cmpfunc  tp_compare;  /* __cmp__ */
   qlz_c_str,                  /* reprfunc  tp_repr;    /* __repr__ */
   0,                          /* PyNumberMethods *tp_as_number; */
   0,                          /* PySequenceMethods *tp_as_sequence; */
@@ -206,7 +206,7 @@ static PyTypeObject QLZStateCompressType = {
     "quicklz objects",           /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    qlz_compare,                /* tp_richcompare */
+    0,                /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
@@ -232,10 +232,10 @@ static PyTypeObject QLZStateDecompressType = {
   sizeof(qlz_state_decompress_Type),/* int tp_basicsize; */
   0,                          /* int tp_itemsize;       /* not used much */
   (destructor)qlz_state_decompress_dealloc,/* destructor tp_dealloc; */
-  qlz_d_print,                /* printfunc  tp_print;   */
+  0,                /* printfunc  tp_print;   */
   qlz_py_getattr,             /* getattrfunc  tp_getattr; /* __getattr__ */
   qlz_py_setattr,             /* setattrfunc  tp_setattr;  /* __setattr__ */
-  qlz_compare,                          /* cmpfunc  tp_compare;  /* __cmp__ */
+  0,                          /* cmpfunc  tp_compare;  /* __cmp__ */
   qlz_d_str,                  /* reprfunc  tp_repr;    /* __repr__ */
   0,                          /* PyNumberMethods *tp_as_number; */
   0,                          /* PySequenceMethods *tp_as_sequence; */
@@ -250,7 +250,7 @@ static PyTypeObject QLZStateDecompressType = {
     "quicklz objects",           /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    qlz_compare,                /* tp_richcompare */
+    0,                /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
@@ -462,9 +462,9 @@ initquicklz(void)
 {
 
     if (PyType_Ready(&QLZStateCompressType) < 0)
-        return ;
+        return NULL;
     if (PyType_Ready(&QLZStateDecompressType) < 0)
-        return ;
+        return NULL;
 
 #if PY_MAJOR_VERSION >= 3
     PyObject *module = PyModule_Create(&moduledef);
