@@ -15,10 +15,7 @@
 
   **/
 #include <Python.h>
-#define PY_MAJOR_VERSION  3
-#if PY_MAJOR_VERSION >= 3
 #define IS_PY3K
-#endif
 
 #include "quicklz.h"
 #if QLZ_STREAMING_BUFFER == 0
@@ -29,28 +26,9 @@ struct module_state {
     PyObject *error;
 };
 
-#if PY_MAJOR_VERSION >= 3
 #define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
-#else
-#define GETSTATE(m) (&_state)
-static struct module_state _state;
-#endif
 
-/* if support for Python 2.5 is dropped the bytesobject.h will do this for us */
-#if PY_MAJOR_VERSION < 3
-#define PyBytes_FromStringAndSize PyString_FromStringAndSize
-#define _PyBytes_Resize _PyString_Resize
-#define PyBytes_AS_STRING PyString_AS_STRING
 
-#ifndef PyVarObject_HEAD_INIT
-    #define PyVarObject_HEAD_INIT(type, size) \
-        PyObject_HEAD_INIT(type) size,
-#endif
-#ifndef Py_TYPE
-    #define Py_TYPE(ob) (((PyObject*)(ob))->ob_type)
-#endif
-
-#endif
 
 static PyTypeObject QLZStateCompressType;
 static PyTypeObject QLZStateDecompressType;
@@ -149,11 +127,7 @@ PyObject *qlz_c_str(PyObject *self)
 {
     char buf[100];
     sprintf(buf, "QLZStateCompress(%ld)", (long)self);
-#if PY_MAJOR_VERSION >= 3
     return PyBytes_FromString(buf);
-#else
-    return PyString_FromString(buf);
-#endif
 }
 
 int qlz_d_print(PyObject *self, FILE *fp, int flags)
@@ -166,11 +140,7 @@ PyObject *qlz_d_str(PyObject *self)
 {
     char buf[100];
     sprintf(buf, "QLZStateDecompress(%ld)", (long)self);
-#if PY_MAJOR_VERSION >= 3
     return PyBytes_FromString(buf);
-#else
-    return PyString_FromString(buf);
-#endif
 }
 
 long
@@ -274,11 +244,7 @@ PyObject *qlz_size_decompressed_py(PyObject *self, PyObject *args)
     char* buffer;
     int buffer_length;
 
-#if PY_MAJOR_VERSION >= 3
     if (PyArg_ParseTuple(args, "y#", &buffer, &buffer_length)) {
-#else
-    if (PyArg_ParseTuple(args, "s#", &buffer, &buffer_length)) {
-#endif
         result = Py_BuildValue("i", qlz_size_decompressed(buffer));
     } /* otherwise there is an error,
        * the exception already raised by PyArg_ParseTuple, and NULL is
@@ -293,11 +259,7 @@ PyObject *qlz_size_compressed_py(PyObject *self, PyObject *args)
     char* buffer;
     int buffer_length;
     
-#if PY_MAJOR_VERSION >= 3
     if (PyArg_ParseTuple(args, "y#", &buffer, &buffer_length)) {
-#else
-    if (PyArg_ParseTuple(args, "s#", &buffer, &buffer_length)) {
-#endif
         result = Py_BuildValue("i", qlz_size_compressed(buffer));
     } /* otherwise there is an error,
        * the exception already raised by PyArg_ParseTuple, and NULL is
@@ -315,25 +277,15 @@ PyObject *qlz_compress_py(PyObject *self, PyObject *args)
     int buffer_length;
     int size_compressed;
 
-#if PY_MAJOR_VERSION >= 3
     if (PyArg_ParseTuple(args, "y#O!",
                          &buffer, &buffer_length,
                          &QLZStateCompressType, &state))
-#else
-    if (PyArg_ParseTuple(args, "s#O!",
-                         &buffer, &buffer_length,
-                         &QLZStateCompressType, &state))
-#endif
     {
         compressed_buffer = (char*)malloc(buffer_length+400);
         size_compressed = qlz_compress(buffer, compressed_buffer,
                                        buffer_length,
                                        ((qlz_state_compress_Type*)state)->value);
-#if PY_MAJOR_VERSION >= 3
         result = Py_BuildValue("y#", compressed_buffer, size_compressed);
-#else
-        result = Py_BuildValue("s#", compressed_buffer, size_compressed);
-#endif
         free(compressed_buffer);
     } /* otherwise there is an error,
        * the exception already raised by PyArg_ParseTuple, and NULL is
@@ -351,15 +303,9 @@ PyObject *qlz_decompress_py(PyObject *self, PyObject *args)
     int buffer_length;
     int size_decompressed;
 
-#if PY_MAJOR_VERSION >= 3
     if (PyArg_ParseTuple(args, "y#O!",
                         &buffer, &buffer_length,
                         &QLZStateDecompressType, &state))
-#else
-    if (PyArg_ParseTuple(args, "s#O!",
-                        &buffer, &buffer_length,
-                        &QLZStateDecompressType, &state))
-#endif
     {
         size_decompressed = qlz_size_decompressed(buffer);
         decompressed_buffer = (char*)malloc(size_decompressed);
@@ -367,11 +313,7 @@ PyObject *qlz_decompress_py(PyObject *self, PyObject *args)
         qlz_decompress(buffer, decompressed_buffer,
                        ((qlz_state_decompress_Type*)state)->value);
         
-#if PY_MAJOR_VERSION >= 3
         result = Py_BuildValue("y#", decompressed_buffer, size_decompressed);
-#else
-        result = Py_BuildValue("s#", decompressed_buffer, size_decompressed);
-#endif
         free(decompressed_buffer);
     } /* otherwise there is an error,
        * the exception already raised by PyArg_ParseTuple, and NULL is
@@ -423,7 +365,6 @@ PyMethodDef QuicklzMethods[] = {
 };
 
 
-#if PY_MAJOR_VERSION >= 3
 
 static int myextension_traverse(PyObject *m, visitproc visit, void *arg) {
     Py_VISIT(GETSTATE(m)->error);
@@ -452,25 +393,9 @@ static struct PyModuleDef moduledef = {
 
 PyObject *
 PyInit_quicklz(void)
-#else
-
-#define INITERROR return
-
-void
-initquicklz(void)
-#endif
 {
 
-    if (PyType_Ready(&QLZStateCompressType) < 0)
-        return NULL;
-    if (PyType_Ready(&QLZStateDecompressType) < 0)
-        return NULL;
-
-#if PY_MAJOR_VERSION >= 3
     PyObject *module = PyModule_Create(&moduledef);
-#else
-    PyObject *module = Py_InitModule("quicklz", QuicklzMethods);
-#endif
 
     if (module == NULL)
         INITERROR;
@@ -488,7 +413,5 @@ initquicklz(void)
     Py_INCREF(&QLZStateDecompressType);
     PyModule_AddObject(module, "QLZStateDecompress", (PyObject *)&QLZStateDecompressType);
 
-#if PY_MAJOR_VERSION >= 3
     return module;
-#endif
 }
