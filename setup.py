@@ -1,40 +1,14 @@
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
+
+module = Extension(
+    'quicklz',
+    sources=['quicklzmodule.c', 'quicklz.c'],  # 包含 QuickLZ 的源码文件
+    include_dirs=['.'],  # 包含头文件的路径
+)
 
 setup(
-    name = "quicklz",
-    version = "1.5.0",
-    description="QuickLZ Bindings for Python",
-    author='Sergey Dryabzhinsky',
-    author_email='sergey.dryabzhinsky@gmail.com',
-    url='https://github.com/sergey-dryabzhinsky/python-quicklz',
-    ext_modules = [
-        Extension(
-            "quicklz",
-            ["quicklz.c", "quicklzpy.c"],
-            extra_compile_args=[
-               "-O2",
-               "-std=c99",
-               "-Wall",
-               "-W",
-               "-Wundef",
-#           try fortification
-#            "-DFORTIFY_SOURCE=2", "-fstack-protector",
-#           try hard CPU optimization
-#            "-march=native",
-#           try Graphite
-#            "-floop-interchange", "-floop-block", "-floop-strip-mine", "-ftree-loop-distribution",
-            ]
-        )
-    ],
-    classifiers=[
-        'License :: OSI Approved :: BSD License',
-        'Intended Audience :: Developers',
-        'Programming Language :: C',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-    ],
+    name='quicklz',
+    version='1.4.1',
+    description='Python wrapper for QuickLZ',
+    ext_modules=[module],
 )
