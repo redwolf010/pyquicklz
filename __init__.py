@@ -2,12 +2,7 @@ from kivy_ios.toolchain import CythonRecipe
 
 class QuicklzRecipe(CythonRecipe):
     version='1.4.1'
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-    def url(self):
-        return "file://{}/quicklz".format(self.ctx.root_dir)
-        
-    url = url(self)
+    url = "https://github.com/redwolf010/pyquicklz/archive/refs/tags/1.4.1.tar.gz"
     library = "quicklz"
     depends = []
     
